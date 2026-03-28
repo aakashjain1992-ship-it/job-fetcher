@@ -1,0 +1,230 @@
+# ============================================================================
+# Job Fetcher — Candidate Profile Configuration
+# ============================================================================
+# Copy this file to config/profile.yaml and customize for your background.
+# This profile is sent to Claude AI to score job matches against YOUR skills.
+# The more accurate this is, the better your match scores will be.
+# ============================================================================
+
+# --- Basic Info (can also be set via environment variables) ------------------
+# Environment variables take precedence over values here.
+name: "Your Name"                          # env: CANDIDATE_NAME
+current_title: "Senior Product Manager"    # env: CANDIDATE_CURRENT_TITLE
+current_company: "Your Company"            # env: CANDIDATE_CURRENT_CO
+years_experience: 10                       # env: CANDIDATE_YEARS_EXP
+location: "City, Country"                  # env: CANDIDATE_LOCATION
+target_ctc_lpa: 80                         # env: CANDIDATE_TARGET_CTC (in INR lakhs)
+
+# --- Target regions & visa ---------------------------------------------------
+target_regions:
+  - "Dubai"
+  - "Singapore"
+  - "EU"
+  - "USA"
+
+visa_required: true  # Set false if you don't need work visa sponsorship
+
+# --- Salary targets by region ------------------------------------------------
+# env vars: TARGET_SALARY_AED, TARGET_SALARY_SGD, TARGET_SALARY_EUR, TARGET_SALARY_USD
+salary_targets:
+  Dubai_AED: "450000+"
+  Singapore_SGD: "180000+"
+  EU_EUR: "110000+"
+  USA_USD: "200000+"
+
+# --- Your strengths (what you bring to the table) ----------------------------
+# Be specific — include company names, scale, measurable outcomes.
+strengths:
+  - "Platform PM at internet scale (e.g. CDN portals, logistics platforms)"
+  - "Workflow automation with measurable outcomes (e.g. 70% TAT reduction)"
+  - "B2B SaaS with global customers across multiple regions"
+  - "Multi-product platform ownership (3+ products simultaneously)"
+  - "Technical PM — SQL, SAFe, data-informed decisions, Figma, integrations"
+  - "Revenue ownership — direct contribution to MRR growth"
+  - "Stakeholder management across engineering, UX, operations, leadership"
+
+# --- Known gaps (be honest — helps calibrate match scores) -------------------
+known_gaps:
+  - "AI/ML product ownership (closing — side project in progress)"
+  - "Consumer-facing product experience"
+  - "Public portfolio / case studies (not yet published)"
+
+# --- Domain strengths (industries you know well) ----------------------------
+domain_strengths:
+  - "Operations & Workflow Automation"
+  - "B2B Logistics & Supply Chain Tech"
+  - "Enterprise SaaS & Platform Products"
+  - "E-commerce & Marketplace"
+
+# --- Target role titles (what you're looking for) ----------------------------
+target_roles:
+  - "Senior Product Manager"
+  - "Principal Product Manager"
+  - "Group Product Manager"
+  - "Director of Product"
+  - "Senior Technical Product Manager"
+  - "Head of Product"
+
+# --- Preferred domains (industries you want to work in) ----------------------
+preferred_domains:
+  - "Operations & workflow automation"
+  - "Logistics & supply chain"
+  - "Enterprise SaaS / B2B platform"
+  - "Developer tools / infrastructure"
+  - "E-commerce & marketplace"
+
+# --- Key metrics from your past work ----------------------------------------
+# Quantified achievements that Claude uses to match against JD requirements.
+key_metrics:
+  - "30% user satisfaction improvement (partner portals)"
+  - "40% support ticket reduction"
+  - "30% revenue contribution from key feature launch"
+  - "70% TAT reduction through workflow automation"
+  - "18% overall MRR increase"
+  - "20+ integrations across 4 global markets"
+
+# --- Portfolio status (helps determine "apply after" recommendations) --------
+portfolio_status:
+  case_studies_published: 0
+  ai_products_launched: 0
+  linkedin_posts: 0
+  portfolio_site_live: false
+
+# --- Search configuration ---------------------------------------------------
+# Customize which regions and roles to search for.
+# Each search: [query, location, country_code, region_tag, is_remote]
+#
+# To add/remove search regions, edit the list below.
+# Query syntax: use quotes for exact phrases, OR for alternatives.
+searches:
+  # Dubai
+  - query: '"Senior Product Manager" OR "Principal Product Manager" OR "Group Product Manager"'
+    location: "Dubai, United Arab Emirates"
+    country: "United Arab Emirates"
+    region: "Dubai"
+    remote: false
+  - query: '"Director of Product" OR "Head of Product"'
+    location: "Dubai, United Arab Emirates"
+    country: "United Arab Emirates"
+    region: "Dubai"
+    remote: false
+
+  # Singapore
+  - query: '"Senior Product Manager" OR "Principal Product Manager" OR "Group Product Manager"'
+    location: "Singapore"
+    country: "Singapore"
+    region: "Singapore"
+    remote: false
+  - query: '"Director of Product" OR "Head of Product"'
+    location: "Singapore"
+    country: "Singapore"
+    region: "Singapore"
+    remote: false
+
+  # EU
+  - query: '"Senior Product Manager" OR "Principal Product Manager"'
+    location: "Berlin, Germany"
+    country: "Germany"
+    region: "EU"
+    remote: false
+  - query: '"Senior Product Manager" OR "Principal Product Manager"'
+    location: "Amsterdam, Netherlands"
+    country: "Netherlands"
+    region: "EU"
+    remote: false
+  - query: '"Senior Product Manager" visa sponsorship'
+    location: "London, United Kingdom"
+    country: "UK"
+    region: "EU"
+    remote: false
+
+  # USA (Remote)
+  - query: '"Senior Product Manager" OR "Principal Product Manager"'
+    location: "United States"
+    country: "USA"
+    region: "USA"
+    remote: true
+  - query: '"Group Product Manager" OR "Director of Product"'
+    location: "United States"
+    country: "USA"
+    region: "USA"
+    remote: true
+
+  # AI-focused PM roles
+  - query: '"AI Product Manager" OR "Senior Product Manager" "AI products"'
+    location: "United States"
+    country: "USA"
+    region: "USA"
+    remote: true
+  - query: '"AI Product Manager" OR "Senior Product Manager" "generative AI"'
+    location: "Singapore"
+    country: "Singapore"
+    region: "Singapore"
+    remote: false
+
+# --- Career pages to scrape --------------------------------------------------
+# Greenhouse companies use the JSON API (reliable). Others use HTML scraping.
+# type: "greenhouse" (provide board_token) or "html" (provide url)
+career_pages:
+  - company: "Cloudflare"
+    type: "greenhouse"
+    board_token: "cloudflare"
+    default_region: "USA"
+  - company: "PagerDuty"
+    type: "greenhouse"
+    board_token: "pagerduty"
+    default_region: "USA"
+  - company: "Elastic"
+    type: "greenhouse"
+    board_token: "elastic"
+    default_region: "EU"
+  - company: "Twilio"
+    type: "greenhouse"
+    board_token: "twilio"
+    default_region: "USA"
+  - company: "Careem"
+    type: "greenhouse"
+    board_token: "careem"
+    default_region: "Dubai"
+  - company: "Asana"
+    type: "greenhouse"
+    board_token: "asana"
+    default_region: "USA"
+  - company: "HubSpot"
+    type: "greenhouse"
+    board_token: "hubspot"
+    default_region: "USA"
+  - company: "Freshworks"
+    type: "html"
+    url: "https://careers.freshworks.com/jobs?department=Product+Management"
+    default_region: "India"
+  - company: "Salesforce"
+    type: "html"
+    url: "https://careers.salesforce.com/en/jobs/?search=Senior+Product+Manager&team=Product+Management"
+    default_region: "USA"
+  - company: "ServiceNow"
+    type: "html"
+    url: "https://careers.servicenow.com/en/jobs/?search=Senior+Product+Manager"
+    default_region: "USA"
+  - company: "Datadog"
+    type: "html"
+    url: "https://careers.datadoghq.com/all-jobs/?department=Product+Management"
+    default_region: "USA"
+
+# --- Experience filter -------------------------------------------------------
+# Jobs requiring more than this many years of experience are excluded.
+max_experience_years: 12
+
+# --- Score filter -------------------------------------------------------------
+# Jobs with composite score below this are excluded from enriched results
+# (unless the gap is closeable).
+min_enrichment_score: 5
+
+# --- Storage configuration ---------------------------------------------------
+# Choose where to store fetched and enriched job data.
+# Options: "json", "csv", "google_sheets", "both" (sheets + json)
+# Start with "json" — no setup needed. Switch to "google_sheets" after setting up credentials.
+storage: "json"
+
+# If storage is "json", "csv", or "both", results are saved to this directory:
+json_output_dir: "output"

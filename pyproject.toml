@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "job-fetcher"
+version = "1.0.0"
+description = "AI-powered job intelligence pipeline — fetch, deduplicate, and score job listings with Claude AI"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+    "anthropic>=0.40.0",
+    "gspread>=6.0.0",
+    "google-auth>=2.27.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.1.0",
+    "python-dotenv>=1.0.0",
+    "python-jobspy>=1.1.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest"]
+
+[project.scripts]
+job-fetcher = "main:_cli"
+
+[tool.setuptools]
+py-modules = ["main", "enrich_ratings"]
+
+[tool.setuptools.packages.find]
+include = ["config*", "fetchers*", "enricher*", "storage*", "notifier*"]

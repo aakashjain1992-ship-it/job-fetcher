@@ -1,0 +1,57 @@
+# Environment variables — NEVER commit this
+.env
+*.env
+.env.local
+.env.production
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Data files — contain job data and dedup cache
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Output directory (JSON storage)
+output/
+
+# Local output files from test runs
+raw_jobs_*.json
+enriched_jobs_*.json
+digest_preview.html
+
+# Profile config (contains personal data — use profile.example.yaml as template)
+config/profile.yaml
+
+# IDE
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Credentials — belt AND suspenders (these should never exist anyway)
+*service_account*.json
+*credentials*.json
+*keyfile*.json
