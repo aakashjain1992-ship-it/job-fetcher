@@ -36,17 +36,62 @@ from fetchers.career_pages.scraper import fetch_all as fetch_career_pages
 from enricher.claude_enricher import enrich_all
 from storage.dedup_cache import (
     is_duplicate, mark_seen, make_title_hash,
-    start_run, finish_run, get_stats,
+    start_run, finish_run, get_stats, get_last_fetch_date,
 )
 from notifier.weekly_digest import send_digest, should_send_digest
 
 SPREADSHEET_ID = os.environ.get("GOOGLE_SPREADSHEET_ID", "")
 
 
+def _compute_fetch_window() -> int:
+    """
+    Smart fetch window:
+    - First ever run  → last 30 days (720 hours)
+    - Subsequent runs → hours since last successful run + 12h buffer
+    """
+    # Try Supabase first, fall back to local SQLite
+    if STORAGE_MODE == "supabase":
+        try:
+            from storage.supabase_writer import get_last_fetch_date as supa_last
+            last = supa_last()
+        except Exception:
+            last = get_last_fetch_date()
+    else:
+        last = get_last_fetch_date()
+
+    if last is None:
+        print("  First run detected — fetching last 30 days")
+        return 720
+
+    # Make last timezone-aware for comparison
+    from datetime import timezone
+    if last.tzinfo is None:
+        last = last.replace(tzinfo=timezone.utc)
+    hours_since = (datetime.now(timezone.utc) - last).total_seconds() / 3600
+    window = max(24, min(int(hours_since) + 12, 720))
+    print(f"  Last run: {last.strftime('%Y-%m-%d %H:%M')} UTC → fetching last {window}h")
+    return window
+
+
 def _get_storage_writers(storage_mode: str = None):
     """Return write functions based on storage config."""
     mode = storage_mode or STORAGE_MODE
     writers = []
+
+    if mode == "supabase":
+        from storage.supabase_writer import (
+            write_raw_jobs as supa_write_raw,
+            write_enriched_jobs as supa_write_enriched,
+            ensure_headers as supa_ensure,
+            update_dashboard_counts as supa_dashboard,
+        )
+        writers.append({
+            "name": "Supabase",
+            "write_raw": supa_write_raw,
+            "write_enriched": supa_write_enriched,
+            "ensure_headers": supa_ensure,
+            "update_dashboard": supa_dashboard,
+        })
 
     if mode in ("google_sheets", "both"):
         if not SPREADSHEET_ID:
@@ -159,10 +204,11 @@ def run_pipeline(
 
     # ── Step 1: Fetch ────────────────────────────────────────────────
     all_raw = []
+    hours_old = _compute_fetch_window()
 
     print("\nFetching from JobSpy (LinkedIn + Indeed + Google)...")
     try:
-        spy_jobs = fetch_jobspy()
+        spy_jobs = fetch_jobspy(hours_old=hours_old)
         all_raw.extend(spy_jobs)
         print(f"  JobSpy: {len(spy_jobs)} jobs")
     except Exception as e:
@@ -297,6 +343,12 @@ def run_pipeline(
     print(f"{'='*60}\n")
 
     finish_run(run_id, total_fetched, len(new_jobs), len(enriched_jobs), "success")
+    if STORAGE_MODE == "supabase":
+        try:
+            from storage.supabase_writer import record_fetch_run
+            record_fetch_run(run_id, total_fetched, len(new_jobs), len(enriched_jobs), "success")
+        except Exception:
+            pass
 
     return {
         "run_id": run_id,
@@ -333,6 +385,8 @@ Examples:
                         help="Fetch and dedup only — no Claude API calls, no storage writes")
     parser.add_argument("--list-searches", action="store_true",
                         help="Show all configured searches and career pages, then exit")
+    parser.add_argument("--serve", action="store_true",
+                        help="Launch the web dashboard (localhost:8000)")
     return parser
 
 
@@ -342,6 +396,12 @@ def _cli():
 
     if args.list_searches:
         list_searches()
+        return
+
+    if args.serve:
+        import uvicorn
+        print("\nStarting Job Intelligence Dashboard → http://localhost:8000\n")
+        uvicorn.run("web.app:app", host="0.0.0.0", port=8000, reload=False)
         return
 
     # Validate config before running

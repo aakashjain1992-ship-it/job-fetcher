@@ -101,7 +101,7 @@ MAX_RETRIES = 2
 RETRY_DELAY = 10  # seconds
 
 
-def _fetch_region(search_term, location, country, region, is_remote):
+def _fetch_region(search_term, location, country, region, is_remote, hours_old=168):
     df = None
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -111,7 +111,7 @@ def _fetch_region(search_term, location, country, region, is_remote):
                 location=location,
                 country_indeed=country,
                 results_wanted=20,
-                hours_old=168,
+                hours_old=hours_old,
                 is_remote=is_remote,
                 linkedin_fetch_description=True,
                 verbose=0,
@@ -166,7 +166,7 @@ def _fetch_region(search_term, location, country, region, is_remote):
     return jobs
 
 
-def fetch_all():
+def fetch_all(hours_old: int = 168):
     all_jobs = []
     seen_ids = set()
 
@@ -179,7 +179,7 @@ def fetch_all():
 
         label = search_term[:50]
         print(f"  JobSpy: '{label}' in {location}")
-        jobs = _fetch_region(search_term, location, country, region, is_remote)
+        jobs = _fetch_region(search_term, location, country, region, is_remote, hours_old=hours_old)
         new = 0
         for job in jobs:
             if job["job_id"] not in seen_ids:

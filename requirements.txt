@@ -1,9 +1,13 @@
 anthropic>=0.40.0
-gspread>=6.0.0
-google-auth>=2.27.0
 requests>=2.31.0
 beautifulsoup4>=4.12.0
 lxml>=5.1.0
 python-dotenv>=1.0.0
 python-jobspy>=1.1.0
 pyyaml>=6.0
+supabase>=2.4.0
+fastapi>=0.110.0
+uvicorn>=0.29.0
+# Google Sheets (keep for users who prefer it)
+gspread>=6.0.0
+google-auth>=2.27.0

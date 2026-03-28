@@ -2,13 +2,10 @@ name: Job Fetcher Pipeline
 
 on:
   schedule:
-    # Runs 3x daily — adjust to your timezone
-    # Default: 00:30, 08:30, 16:30 UTC
-    - cron: '30 0 * * *'
-    - cron: '30 8 * * *'
-    - cron: '30 16 * * *'
+    # Every Saturday at 6:00 AM UTC (11:30 AM IST)
+    - cron: '0 6 * * 6'
 
-  # Allow manual trigger from GitHub Actions UI
+  # Manual trigger from GitHub Actions UI
   workflow_dispatch:
     inputs:
       skip_career_pages:
@@ -30,7 +27,7 @@ on:
 jobs:
   fetch-jobs:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repo
@@ -58,21 +55,12 @@ jobs:
 
       - name: Run job fetcher pipeline
         env:
-          # Required
-          ANTHROPIC_API_KEY:            ${{ secrets.ANTHROPIC_API_KEY }}
-          GOOGLE_SERVICE_ACCOUNT_JSON:  ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
-          GOOGLE_SPREADSHEET_ID:        ${{ secrets.GOOGLE_SPREADSHEET_ID }}
-          # Optional
-          SERPAPI_KEY:                   ${{ secrets.SERPAPI_KEY }}
-          RESEND_API_KEY:               ${{ secrets.RESEND_API_KEY }}
-          DIGEST_EMAIL:                 ${{ secrets.DIGEST_EMAIL }}
-          # Candidate profile (override YAML values)
-          CANDIDATE_NAME:               ${{ secrets.CANDIDATE_NAME }}
-          CANDIDATE_CURRENT_TITLE:      ${{ secrets.CANDIDATE_CURRENT_TITLE }}
-          CANDIDATE_CURRENT_CO:         ${{ secrets.CANDIDATE_CURRENT_CO }}
-          CANDIDATE_YEARS_EXP:          ${{ secrets.CANDIDATE_YEARS_EXP }}
-          CANDIDATE_LOCATION:           ${{ secrets.CANDIDATE_LOCATION }}
-          CANDIDATE_TARGET_CTC:         ${{ secrets.CANDIDATE_TARGET_CTC }}
+          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL:           ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY:   ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_API_KEY:         ${{ secrets.RESEND_API_KEY }}
+          DIGEST_EMAIL:           ${{ secrets.DIGEST_EMAIL }}
+          SERPAPI_KEY:            ${{ secrets.SERPAPI_KEY }}
         run: |
           ARGS=""
           if [ "${{ github.event.inputs.test_mode }}" = "true" ]; then

@@ -108,6 +108,20 @@ def finish_run(run_id: str, fetched: int, new: int, enriched: int, status: str =
         """, (datetime.utcnow().isoformat(), fetched, new, enriched, status, run_id))
 
 
+def get_last_fetch_date() -> datetime | None:
+    """Return the datetime of the last successful pipeline run (for smart fetch window)."""
+    with _get_conn() as conn:
+        row = conn.execute(
+            "SELECT finished_at FROM run_log WHERE status = 'success' ORDER BY finished_at DESC LIMIT 1"
+        ).fetchone()
+    if not row or not row[0]:
+        return None
+    try:
+        return datetime.fromisoformat(row[0])
+    except (ValueError, TypeError):
+        return None
+
+
 def get_stats() -> dict:
     with _get_conn() as conn:
         total = conn.execute("SELECT COUNT(*) FROM seen_jobs").fetchone()[0]
