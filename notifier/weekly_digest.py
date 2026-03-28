@@ -148,8 +148,7 @@ def build_digest_html(jobs: List[Dict], run_stats: Dict) -> str:
 
   <!-- Footer -->
   <div style="text-align:center;padding:24px 0;font-size:11px;color:#B4B2A9">
-    Job Intelligence Pipeline · Auto-generated every Monday<br>
-    <a href="https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}" style="color:#1D9E75;text-decoration:none">Open Google Sheet →</a>
+    Job Intelligence Pipeline · Auto-generated every Saturday
   </div>
 </div>
 </body>
@@ -198,6 +197,6 @@ def send_digest(jobs: List[Dict], run_stats: Dict) -> bool:
 
 def should_send_digest() -> bool:
     """
-    Only send on Mondays (GitHub Actions runs every 8 hours, we only want Monday emails).
+    Send on Saturdays — pipeline runs weekly on Saturday so the digest fires on the same run.
     """
-    return datetime.utcnow().weekday() == 0  # 0 = Monday
+    return datetime.utcnow().weekday() == 5  # 5 = Saturday

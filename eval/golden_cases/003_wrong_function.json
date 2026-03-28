@@ -1,0 +1,19 @@
+{
+  "name": "wrong_function_finance_pm",
+  "description": "Finance / trading PM — completely wrong domain and function for Aakash. Should score Low.",
+  "job": {
+    "job_id": "GOLD-003",
+    "title": "Senior Product Manager — Trading Platform",
+    "company": "Goldman Sachs",
+    "location": "London, UK",
+    "region": "EU",
+    "remote_type": "Onsite",
+    "salary_text": "£130,000-£160,000/year",
+    "full_description": "Goldman Sachs is hiring a Senior PM for its equities trading platform. You will own the roadmap for algorithmic trading tools, risk management dashboards, and market data feeds. Requirements: 7+ years in financial services product management, deep understanding of FIX protocol, equities or derivatives trading domain expertise required, Series 7 or equivalent license preferred. Experience with Bloomberg Terminal, market microstructure, and regulatory compliance (MiFID II). Strong quantitative background essential."
+  },
+  "expected": {
+    "role_match_score_max": 5,
+    "apply_priority": "Low",
+    "composite_score_max": 5.0
+  }
+}

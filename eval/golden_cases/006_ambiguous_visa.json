@@ -1,0 +1,17 @@
+{
+  "name": "ambiguous_visa_language",
+  "description": "No mention of visa either way — should be Unclear, not Yes or No.",
+  "job": {
+    "job_id": "GOLD-006",
+    "title": "Senior Product Manager — Enterprise SaaS",
+    "company": "Freshworks",
+    "location": "San Mateo, USA",
+    "region": "USA",
+    "remote_type": "Hybrid",
+    "salary_text": "$160,000-$200,000/year",
+    "full_description": "Freshworks is hiring a Senior PM to own our CRM product suite. You will work with enterprise customers to build workflow automation and integration features. 5-10 years of PM experience in B2B SaaS required. Strong analytical skills and experience with SQL preferred. Competitive compensation including equity. We offer great benefits and a collaborative culture. This role is based in San Mateo with hybrid work flexibility."
+  },
+  "expected": {
+    "visa_sponsor_detected": "Unclear"
+  }
+}

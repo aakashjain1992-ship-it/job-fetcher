@@ -16,8 +16,6 @@ try:
 except ImportError:
     pass
 
-from storage.sheets_writer import _get_sheet, _rl, TAB_ENRICHED
-
 SERPAPI_KEY = os.environ.get("SERPAPI_KEY", "")
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -235,10 +233,106 @@ def get_company_data(company: str) -> dict:
     return result
 
 
-def run(spreadsheet_id: str):
+def run(spreadsheet_id: str = None):
+    """Run ratings enricher — auto-detects storage mode."""
+    from config.profile import STORAGE_MODE
+    if STORAGE_MODE == "supabase":
+        run_supabase()
+    else:
+        if not spreadsheet_id:
+            print("❌ No spreadsheet_id provided and storage is not supabase")
+            return
+        run_sheets(spreadsheet_id)
+
+
+def run_supabase():
+    """Fetch Glassdoor ratings for high-fit jobs stored in Supabase."""
     print("\n" + "="*50)
-    print("Company Ratings Enricher")
+    print("Company Ratings Enricher (Supabase)")
     print("="*50 + "\n")
+
+    from storage.supabase_writer import _get_client
+    client = _get_client()
+
+    # Fetch high-fit jobs missing ratings
+    result = client.table("jobs").select(
+        "job_id, company, role_match_score, resume_match_pct, glassdoor_rating, company_size"
+    ).gte("role_match_score", 8).gte("resume_match_pct", 70).execute()
+
+    jobs = result.data or []
+    if not jobs:
+        print("No high-fit jobs found (role >= 8, resume >= 70%)")
+        return
+
+    # Deduplicate by company, skip already rated
+    seen = set()
+    to_update = []
+    skipped_done = 0
+
+    for job in jobs:
+        company = (job.get("company") or "").strip()
+        if not company:
+            continue
+        if job.get("glassdoor_rating") and job.get("company_size"):
+            skipped_done += 1
+            continue
+        if company.lower() in seen:
+            continue
+        seen.add(company.lower())
+        to_update.append(job)
+
+    print(f"High-fit jobs:      {len(jobs)}")
+    print(f"Already rated:      {skipped_done} — skipped")
+    print(f"Companies to fetch: {len(to_update)}\n")
+
+    if not to_update:
+        print("All companies already rated — nothing to do")
+        return
+
+    found = 0
+    company_cache = {}  # company → {rating, size}
+
+    for idx, job in enumerate(to_update, 1):
+        company = job["company"].strip()
+        print(f"  [{idx}/{len(to_update)}] {company}...")
+
+        if company in company_cache:
+            data = company_cache[company]
+        else:
+            data = get_company_data(company)
+            company_cache[company] = data
+
+        rating = data.get("rating", "") or job.get("glassdoor_rating", "")
+        size   = data.get("size", "") or job.get("company_size", "")
+
+        if rating or size:
+            # Update all jobs from this company
+            try:
+                update_data = {}
+                if rating:
+                    update_data["glassdoor_rating"] = rating
+                if size:
+                    update_data["company_size"] = size
+                client.table("jobs").update(update_data).eq("company", company).execute()
+                found += 1
+                print(f"    → Rating: {rating or 'N/A'} | Size: {size or 'N/A'} ✅")
+            except Exception as e:
+                print(f"    → Write error: {e}")
+        else:
+            print(f"    → Not found")
+
+        time.sleep(2)
+
+    print(f"\nDone. {found}/{len(to_update)} companies updated.")
+
+
+def run_sheets(spreadsheet_id: str):
+    """Original Google Sheets implementation."""
+    print("\n" + "="*50)
+    print("Company Ratings Enricher (Sheets)")
+    print("="*50 + "\n")
+
+    from storage.sheets_writer import _get_sheet, _rl, TAB_ENRICHED
 
     sh = _get_sheet(spreadsheet_id)
     ws = sh.worksheet(TAB_ENRICHED)
@@ -251,14 +345,12 @@ def run(spreadsheet_id: str):
     header = all_rows[0]
     data_rows = all_rows[1:]
 
-    # Column positions for role match and resume match
     try:
         COL_ROLE_MATCH   = header.index("Role Match (0-10)")
         COL_RESUME_MATCH = header.index("Resume Match %")
     except ValueError:
-        COL_ROLE_MATCH, COL_RESUME_MATCH = 4, 9  # fallback defaults
+        COL_ROLE_MATCH, COL_RESUME_MATCH = 4, 9
 
-    # Find rows needing rating — only high-fit jobs, deduplicated by company
     seen_companies = set()
     to_update = []
     skipped_low = 0
@@ -271,7 +363,6 @@ def run(spreadsheet_id: str):
         if not company:
             continue
 
-        # Filter: only role match >= 8 AND resume match >= 70%
         try:
             role_match   = float(row[COL_ROLE_MATCH]) if len(row) > COL_ROLE_MATCH and row[COL_ROLE_MATCH] else 0
             resume_match = float(row[COL_RESUME_MATCH]) if len(row) > COL_RESUME_MATCH and row[COL_RESUME_MATCH] else 0
@@ -285,64 +376,49 @@ def run(spreadsheet_id: str):
         current_rating = row[COL_GLASSDOOR].strip() if len(row) > COL_GLASSDOOR else ""
         current_size   = row[COL_COMPANY_SIZE].strip() if len(row) > COL_COMPANY_SIZE else ""
 
-        # Skip if already complete
         if current_rating and current_size:
             skipped_done += 1
             continue
 
-        # Deduplicate by company name
         if company.lower() in seen_companies:
             continue
         seen_companies.add(company.lower())
-
         to_update.append((i, company, current_size))
 
     total_rows = sum(1 for r in data_rows if len(r) > COL_COMPANY and r[COL_COMPANY].strip())
-    print(f"Total rows in sheet:              {total_rows}")
+    print(f"Total rows:                       {total_rows}")
     print(f"Low fit (role<8 or resume<70%):   {skipped_low} — skipped")
     print(f"Already complete:                 {skipped_done} — skipped")
-    print(f"Unique high-fit companies to fetch: {len(to_update)}\n")
+    print(f"Unique high-fit companies:        {len(to_update)}\n")
 
     if not to_update:
         print("All rows already have ratings — nothing to do")
         return
 
-    # Fetch and write immediately after each company — crash-safe
-    rating_col = chr(64 + COL_GLASSDOOR + 1)    # R
-    size_col   = chr(64 + COL_COMPANY_SIZE + 1)  # S
+    rating_col = chr(64 + COL_GLASSDOOR + 1)
+    size_col   = chr(64 + COL_COMPANY_SIZE + 1)
     found = 0
 
     for idx, (sheet_row, company, existing_size) in enumerate(to_update, 1):
-        print(f"  [{idx}/{len(to_update)}] Fetching: {company}...")
+        print(f"  [{idx}/{len(to_update)}] {company}...")
         data = get_company_data(company)
-
         rating = data.get("rating", "")
         size   = data.get("size", "") or existing_size
 
         if rating or size:
-            # Write immediately to sheet
             try:
-                ws.update(
-                    f"{rating_col}{sheet_row}:{size_col}{sheet_row}",
-                    [[rating, size]]
-                )
+                ws.update(f"{rating_col}{sheet_row}:{size_col}{sheet_row}", [[rating, size]])
                 _rl()
                 found += 1
-                print(f"    → Rating: {rating or 'N/A'} | Size: {size or 'N/A'} ✅ saved")
+                print(f"    → Rating: {rating or 'N/A'} | Size: {size or 'N/A'} ✅")
             except Exception as e:
                 print(f"    → Write error: {e}")
         else:
             print(f"    → Not found")
-
         time.sleep(2)
 
     print(f"\nDone. {found}/{len(to_update)} companies updated.")
-    print(f"Run again anytime to fill remaining gaps — already-filled rows are skipped.")
 
 
 if __name__ == "__main__":
-    sid = os.environ.get("GOOGLE_SPREADSHEET_ID", "")
-    if not sid:
-        print("❌ GOOGLE_SPREADSHEET_ID not set in .env")
-        sys.exit(1)
-    run(sid)
+    run(os.environ.get("GOOGLE_SPREADSHEET_ID", ""))

@@ -1,0 +1,21 @@
+{
+  "name": "perfect_platform_pm_singapore_visa",
+  "description": "Strong B2B platform PM role in Singapore, explicit visa sponsorship, hybrid. Should score High.",
+  "job": {
+    "job_id": "GOLD-001",
+    "title": "Senior Product Manager — Partner Platform",
+    "company": "Grab",
+    "location": "Singapore",
+    "region": "Singapore",
+    "remote_type": "Hybrid",
+    "salary_text": "S$180,000-S$220,000/year",
+    "full_description": "Grab is hiring a Senior PM to own the partner-facing platform for our logistics and delivery ecosystem. You will lead the roadmap for APIs, portals, and automation tools used by 10,000+ delivery partners across SEA. We are looking for 6-12 years of experience in B2B SaaS or platform products, ideally with logistics or marketplace domain knowledge. Strong SQL and data skills required. We sponsor Employment Pass for eligible international candidates. Hybrid work — 3 days in office. Responsibilities: own platform vision, drive workflow automation, reduce partner support overhead, ship integrations with third-party logistics providers."
+  },
+  "expected": {
+    "role_match_score_min": 8,
+    "visa_sponsor_detected": "Yes",
+    "apply_priority": "High",
+    "composite_score_min": 7.5,
+    "red_flags_empty": true
+  }
+}

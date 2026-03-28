@@ -51,6 +51,9 @@ config/profile.yaml
 *.log
 logs/
 
+# Eval feedback log — contains personal application outcomes
+eval/feedback_log.jsonl
+
 # Credentials — belt AND suspenders (these should never exist anyway)
 *service_account*.json
 *credentials*.json

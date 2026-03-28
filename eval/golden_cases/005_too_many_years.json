@@ -1,0 +1,18 @@
+{
+  "name": "requires_15_years_experience",
+  "description": "Requires 15+ years PM experience — exceeds Aakash's 10yr. Should be flagged as red flag.",
+  "job": {
+    "job_id": "GOLD-005",
+    "title": "Director of Product Management",
+    "company": "Oracle",
+    "location": "Bangalore, India",
+    "region": "India",
+    "remote_type": "Hybrid",
+    "salary_text": "₹80,00,000-₹1,20,00,000/year",
+    "full_description": "Oracle is seeking a Director of Product Management for our cloud infrastructure division. This role requires a minimum of 15 years of product management experience, with at least 5 years in a director-level role. You must have managed large product portfolios with 20+ engineers. Deep enterprise software domain expertise essential. Must have led products generating $100M+ ARR. Experience managing distributed global teams of 50+ required."
+  },
+  "expected": {
+    "apply_priority_not": "High",
+    "red_flags_empty": false
+  }
+}

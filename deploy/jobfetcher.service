@@ -1,0 +1,21 @@
+[Unit]
+Description=Job Intelligence Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=jobfetcher
+WorkingDirectory=/opt/job-fetcher
+EnvironmentFile=/opt/job-fetcher/.env
+ExecStart=/opt/job-fetcher/venv/bin/python main.py --serve
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

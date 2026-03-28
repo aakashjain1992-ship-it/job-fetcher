@@ -36,6 +36,10 @@ CREATE TABLE IF NOT EXISTS jobs (
   inr_equivalent_lpa  INTEGER,
   salary_range        TEXT,
 
+  -- Company data (populated by enrich_ratings.py)
+  glassdoor_rating    TEXT,          -- e.g. "4.1"
+  company_size        TEXT,          -- e.g. "10,000-50,000"
+
   -- Application tracking (updated by user in dashboard)
   apply_status        TEXT DEFAULT 'New',
   -- New | Saved | Applied | Screening | Interview | Final | Offer | Accepted | Rejected | Withdrawn
@@ -88,6 +92,28 @@ CREATE TABLE IF NOT EXISTS resume_analyses (
   jobs_unlocked   INTEGER DEFAULT 0,
   raw_analysis    TEXT
 );
+
+-- Case studies portfolio (written by user + Claude-assisted drafts)
+CREATE TABLE IF NOT EXISTS case_studies (
+  id              SERIAL PRIMARY KEY,
+  title           TEXT NOT NULL,
+  company         TEXT,               -- company where this happened
+  role            TEXT,               -- your role at the time
+  tags            JSONB DEFAULT '[]', -- ["logistics", "automation", "B2B SaaS"]
+  problem         TEXT,               -- what problem you solved
+  approach        TEXT,               -- how you approached it
+  outcome         TEXT,               -- measurable results
+  metrics         TEXT,               -- key numbers e.g. "70% TAT reduction, $2M ARR"
+  full_draft      TEXT,               -- Claude-generated full narrative
+  status          TEXT DEFAULT 'draft', -- draft | polished | published
+  target_roles    JSONB DEFAULT '[]', -- which job types this case study is suited for
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TRIGGER case_studies_updated_at
+  BEFORE UPDATE ON case_studies
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- Indexes for common dashboard queries
 CREATE INDEX IF NOT EXISTS idx_jobs_composite_score ON jobs(composite_score DESC);

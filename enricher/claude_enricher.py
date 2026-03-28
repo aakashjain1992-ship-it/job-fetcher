@@ -15,7 +15,8 @@ import anthropic
 
 from config.profile import (
     CANDIDATE_PROFILE, EQUIVALENT_ROLES,
-    HIGH_FIT_DOMAINS, VISA_POSITIVE_SIGNALS, VISA_NEGATIVE_SIGNALS
+    HIGH_FIT_DOMAINS, VISA_POSITIVE_SIGNALS, VISA_NEGATIVE_SIGNALS,
+    SCORING_WEIGHTS,
 )
 
 _NAME = CANDIDATE_PROFILE["name"]
@@ -87,7 +88,7 @@ For EACH job, return a JSON object with these exact fields:
   "key_matching_skills": ["up to 4 skills from JD that match the candidate's background"],
   "red_flags": ["list of blocking issues e.g. 'requires US citizenship', 'on-site only Dubai with no relocation', 'needs 15+ years' — empty list if none"],
   "gap_to_close": "specific thing he needs before applying — e.g. 'portfolio case study (2 weeks)' or 'ready now — apply within 5 days'",
-  "composite_score": 0-10 (weighted: role_match 40% + visa_ok 20% + resume_match 30% + no_red_flags 10%),
+  "composite_score": 0-10 (weighted: role_match {w_role}% + visa_ok {w_visa}% + resume_match {w_resume}% + no_red_flags {w_red}%),
   "apply_priority": "High" | "Medium" | "Low",
   "apply_after": "now" | "resume fix done" | "1 case study published" | "portfolio ready" | "AI product launched" | "60 days",
   "notes": "1 sentence on why this role is or isn't a strong match for the candidate specifically"
@@ -151,33 +152,47 @@ def enrich_batch(jobs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     prompt = USER_PROMPT_TEMPLATE.format(
         n=len(jobs),
-        jobs_json=json.dumps(jobs_for_claude, indent=2)
+        jobs_json=json.dumps(jobs_for_claude, indent=2),
+        w_role=round(SCORING_WEIGHTS['role_match'] * 100),
+        w_visa=round(SCORING_WEIGHTS['visa'] * 100),
+        w_resume=round(SCORING_WEIGHTS['resume'] * 100),
+        w_red=round(SCORING_WEIGHTS['red_flags'] * 100),
     )
 
     raw = ""
-    try:
-        message = client.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=3000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": prompt}]
-        )
+    last_exc = None
+    for attempt in range(1, 3):  # up to 2 attempts
+        try:
+            message = client.messages.create(
+                model="claude-haiku-4-5",
+                max_tokens=3000,
+                system=SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": prompt}]
+            )
 
-        raw = message.content[0].text.strip()
+            raw = message.content[0].text.strip()
 
-        # Strip any accidental markdown fences
-        if raw.startswith("```"):
-            raw = re.sub(r"^```(?:json)?\n?", "", raw)
-            raw = re.sub(r"\n?```$", "", raw)
+            # Strip any accidental markdown fences
+            if raw.startswith("```"):
+                raw = re.sub(r"^```(?:json)?\n?", "", raw)
+                raw = re.sub(r"\n?```$", "", raw)
 
-        enriched_list = json.loads(raw)
+            enriched_list = json.loads(raw)
+            break  # success
 
-    except json.JSONDecodeError as e:
-        print(f"Claude JSON parse error: {e}")
-        print(f"Raw response: {raw[:300] if raw else '(empty)'}")
-        return []
-    except Exception as e:
-        print(f"Claude API error: {e}")
+        except json.JSONDecodeError as e:
+            last_exc = e
+            print(f"Claude JSON parse error (attempt {attempt}/2): {e}")
+            print(f"Raw response: {raw[:300] if raw else '(empty)'}")
+            if attempt < 2:
+                time.sleep(5)
+        except Exception as e:
+            last_exc = e
+            print(f"Claude API error (attempt {attempt}/2): {e}")
+            if attempt < 2:
+                time.sleep(10)
+    else:
+        print(f"  Batch skipped after 2 failed attempts: {last_exc}")
         return []
 
     # Merge enrichment data back onto original job dicts
@@ -195,6 +210,13 @@ def enrich_batch(jobs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         merged = {**job, **enrichment, "inr_equivalent_lpa": inr}
         results.append(merged)
+
+    # Validate every enriched job — catches wrong scores, missing fields, logic errors
+    try:
+        from eval.output_validator import validate_batch
+        validate_batch(results, verbose=True)
+    except Exception:
+        pass
 
     return results
 

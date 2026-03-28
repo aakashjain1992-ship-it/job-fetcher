@@ -253,6 +253,74 @@
     transition: all 0.15s;
   }
   .btn-prep:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-cl { border-color: rgba(99,102,241,0.4); color: #818cf8; }
+  .btn-cl:hover { background: rgba(99,102,241,0.1); border-color: var(--accent); color: var(--accent); }
+  .btn-tweak { border-color: rgba(245,158,11,0.4); color: #f59e0b; }
+  .btn-tweak:hover { background: rgba(245,158,11,0.08); border-color: #f59e0b; color: #f59e0b; }
+
+  .job-card-actions {
+    display: flex; gap: 6px; margin-top: 6px;
+  }
+  .job-card-actions button { flex: 1; }
+
+  /* Cover Letter & Tweak modals */
+  .doc-overlay {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(10,15,30,0.9); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .doc-overlay.open { display: flex; }
+  .doc-modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; width: 740px; max-width: 96vw; max-height: 88vh;
+    overflow-y: auto; padding: 28px 30px; position: relative;
+  }
+  .letter-body {
+    background: var(--bg); border: 1px solid var(--border-subtle);
+    border-radius: 8px; padding: 22px 24px;
+    font-size: 13px; line-height: 1.85; color: var(--text);
+    white-space: pre-wrap; margin: 14px 0 18px;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .tweak-score-box {
+    flex: 1; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; text-align: center;
+  }
+  .tweak-score-val { font-size: 26px; font-weight: 700; line-height: 1.1; }
+  .tweak-score-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .tweak-item {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 13px 15px; margin-bottom: 10px;
+  }
+  .tweak-item-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .tweak-section-tag {
+    font-size: 10px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tweak-kw-chip {
+    display: inline-block; background: rgba(99,102,241,0.12);
+    color: #818cf8; border: 1px solid rgba(99,102,241,0.3);
+    border-radius: 4px; padding: 1px 7px; font-size: 10px;
+  }
+  .tweak-original {
+    font-size: 12px; color: #f87171; margin-bottom: 4px;
+    padding: 5px 8px; background: rgba(239,68,68,0.06);
+    border-radius: 4px; border-left: 2px solid #ef4444;
+  }
+  .tweak-suggested {
+    font-size: 12px; color: #4ade80; margin-bottom: 6px;
+    padding: 5px 8px; background: rgba(34,197,94,0.06);
+    border-radius: 4px; border-left: 2px solid #22c55e;
+  }
+  .tweak-reason { color: var(--muted); font-size: 11px; font-style: italic; }
+  .missing-kw-chip {
+    display: inline-block; background: rgba(245,158,11,0.1);
+    color: #f59e0b; border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 4px; padding: 2px 8px; font-size: 10px; margin: 2px 2px;
+  }
+  .doc-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
 
   /* Modal */
   #modal-overlay {
@@ -466,6 +534,19 @@
       <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
     </svg>
   </button>
+
+  <!-- Push system button to bottom -->
+  <div style="flex:1"></div>
+
+  <!-- Pipeline status dot -->
+  <div id="nav-pipeline-dot" title="Pipeline idle" style="width:8px;height:8px;border-radius:50%;background:var(--border);margin-bottom:4px;transition:background 0.3s"></div>
+
+  <button class="nav-btn" id="nav-system" onclick="switchTab('system')" title="System & Settings">
+    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+      <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>
+  </button>
 </nav>
 
 <!-- Main -->
@@ -599,6 +680,22 @@
         </div>
       </div>
     </div>
+
+    <!-- Skills Roadmap -->
+    <div class="panel" style="margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="panel-title" style="margin:0">Skill Roadmap — Learn X, Unlock Y Jobs</div>
+        <button class="btn-prep" onclick="loadSkillRoadmap()" id="roadmap-refresh-btn" style="padding:4px 12px;font-size:11px">↺ Refresh</button>
+      </div>
+      <div id="skill-roadmap-loading" style="display:none;text-align:center;padding:20px">
+        <div class="spinner" style="display:inline-block;width:20px;height:20px"></div>
+        <span style="color:var(--muted);font-size:12px;margin-left:8px">Analysing JD corpus…</span>
+      </div>
+      <div id="skill-roadmap-content"></div>
+      <div id="skill-roadmap-empty" class="empty-state" style="padding:20px">
+        <div style="color:var(--muted);font-size:12px">Run the pipeline first to populate JD data.</div>
+      </div>
+    </div>
   </div>
 
   <!-- ═══════════════════════════ TRAINING TAB ══════════════════════ -->
@@ -650,9 +747,207 @@
         </div>
       </div>
     </div>
+
+    <!-- Case Studies Portfolio -->
+    <div class="panel" style="margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="panel-title" style="margin:0">Portfolio Case Studies</div>
+        <button class="btn-primary" style="padding:5px 14px;font-size:12px" onclick="openCaseStudyModal()">+ New Case Study</button>
+      </div>
+      <div id="case-studies-loading" style="display:none;text-align:center;padding:20px">
+        <div class="spinner" style="display:inline-block;width:20px;height:20px"></div>
+      </div>
+      <div id="case-studies-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+      <div id="case-studies-empty" class="empty-state" style="padding:20px">
+        <div class="empty-icon">✍️</div>
+        <div class="empty-title">No case studies yet</div>
+        <div style="font-size:12px">Write one now — Claude will draft the narrative for you.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ SYSTEM TAB ═══════════════════════ -->
+  <div id="tab-system" class="tab-panel">
+    <div class="page-header">
+      <div>
+        <div class="page-title">System</div>
+        <div class="page-subtitle">Pipeline · Resume · Settings</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+
+      <!-- ── Pipeline Control ── -->
+      <div class="panel" style="grid-column:1/-1">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div class="panel-title" style="margin:0">Pipeline</div>
+          <div id="sys-pipeline-badge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--border);color:var(--muted)">IDLE</div>
+          <div id="sys-pipeline-spinner" style="display:none"><div class="spinner" style="width:14px;height:14px"></div></div>
+        </div>
+
+        <!-- Last run summary -->
+        <div id="sys-last-run" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:12px">
+          <div style="color:var(--muted)">Loading last run…</div>
+        </div>
+
+        <!-- Run options -->
+        <div style="display:flex;gap:16px;margin-bottom:14px;font-size:12px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--muted)">
+            <input type="checkbox" id="opt-skip-career" style="accent-color:var(--accent)">
+            Skip career pages <span style="color:var(--muted);font-size:10px">(faster)</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--muted)">
+            <input type="checkbox" id="opt-skip-ratings" style="accent-color:var(--accent)">
+            Skip Glassdoor ratings
+          </label>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:20px">
+          <button class="btn-primary" id="run-pipeline-btn" onclick="triggerPipeline()" style="padding:8px 20px">
+            ▶ Run Pipeline Now
+          </button>
+          <button class="btn-prep" onclick="loadPipelineRuns()" style="padding:8px 14px">↺ Refresh</button>
+        </div>
+
+        <!-- Run history -->
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Run History</div>
+        <div id="pipeline-runs-loading" style="color:var(--muted);font-size:12px;padding:8px">Loading…</div>
+        <div id="pipeline-runs-table" style="display:none">
+          <div style="display:grid;grid-template-columns:140px 80px 70px 70px 70px 1fr;gap:0;font-size:11px;color:var(--muted);padding:4px 8px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.4px">
+            <span>Finished</span><span>Status</span><span>Fetched</span><span>New</span><span>Enriched</span><span>Run ID</span>
+          </div>
+          <div id="pipeline-runs-rows"></div>
+        </div>
+      </div>
+
+      <!-- ── Resume Upload ── -->
+      <div class="panel">
+        <div class="panel-title">Resume</div>
+        <div id="resume-upload-status" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--muted)">
+          Checking…
+        </div>
+
+        <div id="resume-drop-zone"
+          ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+          ondragleave="this.style.borderColor='var(--border)'"
+          ondrop="handleResumeDrop(event)"
+          style="border:2px dashed var(--border);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:12px"
+          onclick="document.getElementById('resume-file-input').click()">
+          <div style="font-size:24px;margin-bottom:6px">📄</div>
+          <div style="color:var(--text);font-size:13px;font-weight:500">Drop your resume here</div>
+          <div style="color:var(--muted);font-size:11px;margin-top:4px">.docx or .txt · Click to browse</div>
+          <input type="file" id="resume-file-input" accept=".docx,.txt" style="display:none" onchange="uploadResume(this.files[0])">
+        </div>
+
+        <div id="resume-upload-progress" style="display:none;text-align:center;padding:10px;color:var(--muted);font-size:12px">
+          <div class="spinner" style="display:inline-block;width:16px;height:16px;margin-right:6px"></div>Uploading…
+        </div>
+
+        <div id="resume-preview-box" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:11px;color:var(--muted);max-height:120px;overflow-y:auto;white-space:pre-wrap;line-height:1.6"></div>
+      </div>
+
+      <!-- ── Settings ── -->
+      <div class="panel">
+        <div class="panel-title">Settings</div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px">LinkedIn Profile URL</label>
+          <div style="display:flex;gap:6px">
+            <input type="url" id="linkedin-url-input" class="filter-input" style="flex:1"
+              placeholder="https://linkedin.com/in/your-profile"
+              value="">
+            <button class="btn-prep" onclick="openLinkedIn()" style="padding:5px 12px;white-space:nowrap">Open ↗</button>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">Saved in browser — use this to quickly open your profile when applying.</div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px">Scoring Preset</label>
+          <select id="scoring-preset-select" class="filter-select" style="width:100%" onchange="savePreset(this.value)">
+            <option value="balanced">Balanced (40% role · 20% visa · 30% resume)</option>
+            <option value="visa_first">Visa First (35% visa — prioritise sponsorship)</option>
+            <option value="role_first">Role First (55% role match)</option>
+            <option value="remote_first">Remote First (40% resume · 10% visa)</option>
+            <option value="salary_first">Salary First (50% role as salary proxy)</option>
+          </select>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">⚠ Change takes effect on next pipeline run (edit <code style="color:var(--accent)">config/profile.yaml</code>).</div>
+        </div>
+
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.4px">Quick Links</label>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <a href="https://supabase.com/dashboard" target="_blank" class="btn-prep" style="text-align:center;text-decoration:none;display:block;padding:6px">Supabase Dashboard ↗</a>
+            <a id="linkedin-quick-link" href="#" target="_blank" class="btn-prep" style="text-align:center;text-decoration:none;display:block;padding:6px" onclick="return openLinkedIn()">LinkedIn Profile ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
 </div><!-- /main -->
+
+<!-- Case Study Modal -->
+<div id="cs-modal-overlay" onclick="closeCsModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:min(640px,95vw);max-height:90vh;overflow-y:auto;position:relative">
+    <button onclick="closeCsModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer">✕</button>
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px">New Case Study</div>
+    <div id="cs-form">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">TITLE *</label>
+          <input id="cs-title" class="filter-input" style="width:100%;box-sizing:border-box" placeholder="e.g. Workflow Automation at Jiffyship">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">COMPANY</label>
+          <input id="cs-company" class="filter-input" style="width:100%;box-sizing:border-box" placeholder="e.g. Jiffyship">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">YOUR ROLE</label>
+          <input id="cs-role" class="filter-input" style="width:100%;box-sizing:border-box" placeholder="e.g. Senior Product Manager">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">TARGET ROLE TYPE</label>
+          <input id="cs-target-role" class="filter-input" style="width:100%;box-sizing:border-box" placeholder="e.g. Platform PM / Ops PM">
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">THE PROBLEM (what business challenge did you solve?)</label>
+        <textarea id="cs-problem" class="filter-input" style="width:100%;box-sizing:border-box;height:60px;resize:vertical" placeholder="e.g. Manual exception handling in logistics ops was causing 3-day delays and 40% of support tickets"></textarea>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">YOUR APPROACH (what did you do?)</label>
+        <textarea id="cs-approach" class="filter-input" style="width:100%;box-sizing:border-box;height:60px;resize:vertical" placeholder="e.g. Mapped exception types, built rule-based decisioning engine, integrated with carrier APIs"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">OUTCOME</label>
+          <input id="cs-outcome" class="filter-input" style="width:100%;box-sizing:border-box" placeholder="e.g. Reduced manual handling by 70%">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">KEY METRICS</label>
+          <input id="cs-metrics" class="filter-input" style="width:100%;box-sizing:border-box" placeholder="e.g. 70% TAT reduction, $2M ARR impact">
+        </div>
+      </div>
+      <div id="cs-draft-area" style="display:none;margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label style="font-size:11px;color:var(--muted)">CLAUDE'S DRAFT</label>
+          <button onclick="copyCsDraft()" class="btn-prep" style="font-size:11px;padding:2px 8px">Copy</button>
+        </div>
+        <div id="cs-draft-text" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-size:12px;white-space:pre-wrap;max-height:300px;overflow-y:auto;color:var(--text-secondary)"></div>
+      </div>
+      <div id="cs-generating" style="display:none;text-align:center;padding:16px;color:var(--muted);font-size:12px">
+        <div class="spinner" style="display:inline-block;width:16px;height:16px;margin-right:6px"></div>Drafting with Claude…
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-primary" style="flex:1" onclick="generateCaseStudy()">⚡ Generate Draft</button>
+        <button class="btn-prep" style="flex:1" onclick="saveCaseStudyManual()">💾 Save Without Draft</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal -->
 <div id="modal-overlay" onclick="closeModal(event)">
@@ -662,6 +957,79 @@
     <div class="modal-company" id="modal-company"></div>
     <div id="modal-badges" class="badges" style="margin-bottom:14px"></div>
     <div class="modal-desc" id="modal-desc"></div>
+    <div id="modal-footer" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle);display:flex;gap:8px;justify-content:flex-end"></div>
+  </div>
+</div>
+
+<!-- Cover Letter Modal -->
+<div id="cl-overlay" class="doc-overlay" onclick="closeCLOverlay(event)">
+  <div class="doc-modal">
+    <button class="modal-close" onclick="closeCLOverlay()">✕</button>
+    <div class="modal-title" id="cl-modal-title">Cover Letter</div>
+    <div class="modal-company" id="cl-modal-company"></div>
+
+    <div id="cl-generating" style="text-align:center;padding:40px 20px;color:var(--muted)">
+      <div class="spinner" style="display:inline-block;width:22px;height:22px;vertical-align:middle;margin-right:10px"></div>
+      Generating with Claude…
+    </div>
+
+    <div id="cl-content" style="display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+        <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Generated Letter</span>
+        <span style="flex:1"></span>
+        <button class="btn-prep" onclick="copyCoverLetter()" style="font-size:11px;padding:3px 10px">Copy</button>
+        <button class="btn-prep" onclick="regenerateCoverLetter()" style="font-size:11px;padding:3px 10px">↺ Regenerate</button>
+      </div>
+      <div class="letter-body" id="cl-letter-text" contenteditable="true" spellcheck="false"></div>
+      <div class="doc-actions">
+        <button class="btn-primary" onclick="downloadCoverLetterPDF()" style="padding:8px 20px;font-size:12px">
+          ⬇ Download PDF
+        </button>
+      </div>
+    </div>
+
+    <div id="cl-error" style="display:none;color:#f87171;text-align:center;padding:28px;font-size:13px"></div>
+  </div>
+</div>
+
+<!-- Tweak Resume Modal -->
+<div id="tweak-overlay" class="doc-overlay" onclick="closeTweakOverlay(event)">
+  <div class="doc-modal">
+    <button class="modal-close" onclick="closeTweakOverlay()">✕</button>
+    <div class="modal-title" id="tweak-modal-title">ATS Resume Tweaks</div>
+    <div class="modal-company" id="tweak-modal-company"></div>
+
+    <div id="tweak-generating" style="text-align:center;padding:40px 20px;color:var(--muted)">
+      <div class="spinner" style="display:inline-block;width:22px;height:22px;vertical-align:middle;margin-right:10px"></div>
+      Analysing JD vs your resume…
+    </div>
+
+    <div id="tweak-content" style="display:none">
+      <!-- ATS Score bar -->
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:18px">
+        <div class="tweak-score-box">
+          <div class="tweak-score-val" style="color:#f59e0b" id="tweak-score-before">—</div>
+          <div class="tweak-score-lbl">Current ATS Match</div>
+        </div>
+        <div style="font-size:22px;color:var(--muted)">→</div>
+        <div class="tweak-score-box" style="border-color:rgba(34,197,94,0.3)">
+          <div class="tweak-score-val" style="color:#22c55e" id="tweak-score-after">—</div>
+          <div class="tweak-score-lbl">After Tweaks</div>
+        </div>
+      </div>
+
+      <!-- Missing keywords -->
+      <div id="tweak-missing-kw" style="margin-bottom:16px"></div>
+
+      <!-- Tweak list -->
+      <div id="tweak-list"></div>
+
+      <div class="doc-actions" style="margin-top:16px">
+        <button class="btn-prep" onclick="copyTweaks()" style="padding:7px 16px;font-size:12px">Copy All Changes</button>
+      </div>
+    </div>
+
+    <div id="tweak-error" style="display:none;color:#f87171;text-align:center;padding:28px;font-size:13px"></div>
   </div>
 </div>
 
@@ -683,15 +1051,18 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('nav-' + tab).classList.add('active');
+  const navBtn = document.getElementById('nav-' + tab);
+  if (navBtn) navBtn.classList.add('active');
   location.hash = tab;
   if (tab === 'training') loadTraining();
   if (tab === 'resume') loadAnalysis();
+  if (tab === 'system') loadSystemTab();
 }
 
 function initRoute() {
   const tab = (location.hash || '#jobs').slice(1);
-  if (['jobs','resume','training'].includes(tab)) switchTab(tab);
+  if (['jobs','resume','training','system'].includes(tab)) switchTab(tab);
+  else switchTab('jobs');
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -854,6 +1225,10 @@ function renderJobs(jobs) {
         <button class="btn-apply" onclick="applyToJob('${j.job_id}', '${j.url_direct || j.url || ''}')">Apply ↗</button>
         <button class="btn-prep" onclick="prepForJob('${j.job_id}')">Prep</button>
       </div>
+      <div class="job-card-actions" onclick="event.stopPropagation()">
+        <button class="btn-prep btn-cl" onclick="showCoverLetter('${j.job_id}')">✉ Cover Letter</button>
+        <button class="btn-prep btn-tweak" onclick="showTweakResume('${j.job_id}')">⚙ Tweak CV</button>
+      </div>
     </div>`;
   }).join('');
 }
@@ -888,6 +1263,8 @@ function applyToJob(jobId, url) {
 async function openModal(jobId) {
   const j = allJobs.find(x => x.job_id === jobId);
   if (!j) return;
+
+  // Populate header immediately from cached data
   document.getElementById('modal-title').textContent = j.title || '';
   document.getElementById('modal-company').textContent = `${j.company || ''} · ${j.region || ''} · ${j.remote_type || ''}`;
   document.getElementById('modal-badges').innerHTML = `
@@ -896,13 +1273,48 @@ async function openModal(jobId) {
     ${j.visa_sponsor_detected ? `<span class="badge ${j.visa_sponsor_detected==='Yes'?'badge-hi':'badge-low'}">Visa ${j.visa_sponsor_detected}</span>` : ''}
     ${(j.red_flags||[]).map(f => `<span class="badge" style="background:rgba(239,68,68,0.1);color:#fc8181">⚠ ${f}</span>`).join('')}
   `;
-  document.getElementById('modal-desc').textContent = j.full_description || j.snippet || 'No description available.';
+
+  // Show modal right away with a loading state for the description
+  const descEl = document.getElementById('modal-desc');
+  descEl.textContent = 'Loading description…';
   document.getElementById('modal-overlay').classList.add('open');
+
+  // Fetch full job details (includes full_description + location)
+  try {
+    const res = await fetch(`/api/jobs/${jobId}`);
+    if (!res.ok) throw new Error('not found');
+    const full = await res.json();
+
+    // Update company line with location if available
+    const loc = full.location || full.region || j.region || '';
+    document.getElementById('modal-company').textContent =
+      `${full.company || j.company || ''} · ${loc} · ${full.remote_type || j.remote_type || ''}`;
+
+    // Show description — prefer full_description, fall back to snippet
+    const desc = full.full_description || full.snippet || '';
+    if (desc.trim()) {
+      descEl.textContent = desc;
+    } else {
+      descEl.innerHTML = '<em style="color:var(--muted)">No description stored for this job. Click "Open Job" to view on the source site.</em>';
+    }
+
+    // Footer: Open Job + Cover Letter + Tweak CV buttons
+    const jobUrl = full.url_direct || full.url || j.url_direct || j.url || '';
+    document.getElementById('modal-footer').innerHTML = `
+      ${jobUrl ? `<a href="${jobUrl}" target="_blank" rel="noopener" class="btn-apply" style="text-decoration:none;padding:6px 14px;font-size:12px">Open Job ↗</a>` : ''}
+      <button class="btn-prep btn-cl" onclick="closeModal();showCoverLetter('${jobId}')" style="font-size:12px;padding:6px 12px">✉ Cover Letter</button>
+      <button class="btn-prep btn-tweak" onclick="closeModal();showTweakResume('${jobId}')" style="font-size:12px;padding:6px 12px">⚙ Tweak CV</button>
+    `;
+  } catch (e) {
+    descEl.innerHTML = '<em style="color:var(--muted)">Could not load description.</em>';
+    document.getElementById('modal-footer').innerHTML = '';
+  }
 }
 
 function closeModal(e) {
   if (!e || e.target === document.getElementById('modal-overlay') || e.type === 'click' && !e.target.closest('#modal')) {
     document.getElementById('modal-overlay').classList.remove('open');
+    document.getElementById('modal-footer').innerHTML = '';
   }
 }
 
@@ -915,6 +1327,7 @@ async function loadAnalysis() {
     const d = await r.json();
     if (d.analysis) renderAnalysis(d.analysis);
   } catch(e) { /* silent */ }
+  loadSkillRoadmap();
 }
 
 function renderAnalysis(a) {
@@ -1020,6 +1433,7 @@ async function loadTraining() {
   loadJobSelectorList();
   loadBehavioral();
   loadFrameworks();
+  loadCaseStudies();
 }
 
 async function loadJobSelectorList() {
@@ -1134,6 +1548,579 @@ function prepForJob(jobId) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+// Skills Roadmap
+// ──────────────────────────────────────────────────────────────────────────────
+async function loadSkillRoadmap() {
+  document.getElementById('skill-roadmap-loading').style.display = 'block';
+  document.getElementById('skill-roadmap-content').innerHTML = '';
+  document.getElementById('skill-roadmap-empty').style.display = 'none';
+  document.getElementById('roadmap-refresh-btn').disabled = true;
+  try {
+    const r = await fetch('/api/resume/skill-roadmap');
+    const d = await r.json();
+    document.getElementById('skill-roadmap-loading').style.display = 'none';
+    document.getElementById('roadmap-refresh-btn').disabled = false;
+    const skills = d.skills || [];
+    if (!skills.length) {
+      document.getElementById('skill-roadmap-empty').style.display = 'block'; return;
+    }
+    const maxFreq = Math.max(...skills.map(s => s.appears_in_jds));
+    document.getElementById('skill-roadmap-content').innerHTML = `
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">
+        Based on ${d.total_jobs_analysed} analysed JDs. Skills you could add to unlock more High-priority roles.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${skills.map(s => {
+          const barWidth = Math.round((s.appears_in_jds / maxFreq) * 100);
+          const unlockColor = s.jobs_would_unlock >= 3 ? '#22c55e' : s.jobs_would_unlock >= 1 ? '#f59e0b' : '#64748b';
+          return `
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <span style="font-weight:600;font-size:13px;color:var(--text);text-transform:capitalize">${s.skill}</span>
+              <div style="display:flex;gap:6px;align-items:center">
+                <span style="font-size:11px;color:var(--muted)">${s.appears_in_jds} JDs</span>
+                ${s.jobs_would_unlock > 0 ? `<span style="background:${unlockColor}20;color:${unlockColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px">+${s.jobs_would_unlock} jobs unlocked</span>` : ''}
+              </div>
+            </div>
+            <div style="background:var(--border);border-radius:3px;height:4px;overflow:hidden">
+              <div style="background:var(--accent);height:100%;width:${barWidth}%;border-radius:3px;transition:width 0.4s"></div>
+            </div>
+            ${s.sample_jobs && s.sample_jobs.length ? `
+            <div style="margin-top:6px;font-size:11px;color:var(--muted)">
+              Roles: ${s.sample_jobs.map(j => `${j.title} @ ${j.company}`).join(' · ')}
+            </div>` : ''}
+          </div>`;
+        }).join('')}
+      </div>`;
+  } catch(e) {
+    document.getElementById('skill-roadmap-loading').style.display = 'none';
+    document.getElementById('skill-roadmap-empty').style.display = 'block';
+    document.getElementById('roadmap-refresh-btn').disabled = false;
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Case Studies
+// ──────────────────────────────────────────────────────────────────────────────
+let _generatedCsDraft = '';
+let _generatedCsId = null;
+
+async function loadCaseStudies() {
+  document.getElementById('case-studies-loading').style.display = 'block';
+  document.getElementById('case-studies-grid').innerHTML = '';
+  document.getElementById('case-studies-empty').style.display = 'none';
+  try {
+    const r = await fetch('/api/training/case-studies');
+    const d = await r.json();
+    document.getElementById('case-studies-loading').style.display = 'none';
+    const cs = d.case_studies || [];
+    if (!cs.length) {
+      document.getElementById('case-studies-empty').style.display = 'block'; return;
+    }
+    document.getElementById('case-studies-grid').innerHTML = cs.map(c => {
+      const statusColor = c.status === 'published' ? '#22c55e' : c.status === 'polished' ? '#f59e0b' : '#64748b';
+      const tags = (c.tags || []).slice(0,3).map(t =>
+        `<span style="background:var(--accent)20;color:var(--accent);font-size:10px;padding:1px 6px;border-radius:3px">${t}</span>`
+      ).join('');
+      return `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div style="font-weight:600;font-size:13px;color:var(--text);line-height:1.3">${c.title}</div>
+          <span style="color:${statusColor};font-size:10px;font-weight:700;margin-left:8px;flex-shrink:0">${(c.status||'draft').toUpperCase()}</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${c.company || ''} ${c.role ? '· ' + c.role : ''}</div>
+        ${c.metrics ? `<div style="font-size:11px;color:var(--green);margin-bottom:6px">📊 ${c.metrics}</div>` : ''}
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">${tags}</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-prep" style="font-size:11px;padding:3px 10px" onclick="viewCaseStudy(${c.id})">View</button>
+          <button class="btn-prep" style="font-size:11px;padding:3px 10px;color:#ef4444" onclick="deleteCaseStudy(${c.id})">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('case-studies-loading').style.display = 'none';
+    document.getElementById('case-studies-empty').style.display = 'block';
+  }
+}
+
+function openCaseStudyModal() {
+  ['cs-title','cs-company','cs-role','cs-target-role','cs-problem','cs-approach','cs-outcome','cs-metrics']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('cs-draft-area').style.display = 'none';
+  document.getElementById('cs-generating').style.display = 'none';
+  _generatedCsDraft = ''; _generatedCsId = null;
+  const overlay = document.getElementById('cs-modal-overlay');
+  overlay.style.display = 'flex';
+}
+
+function closeCsModal(e) {
+  if (!e || e.target === document.getElementById('cs-modal-overlay')) {
+    document.getElementById('cs-modal-overlay').style.display = 'none';
+  }
+}
+
+async function generateCaseStudy() {
+  const title = document.getElementById('cs-title').value.trim();
+  if (!title) { toast('Title is required', '#ef4444'); return; }
+  document.getElementById('cs-generating').style.display = 'block';
+  document.getElementById('cs-draft-area').style.display = 'none';
+  try {
+    const r = await fetch('/api/training/case-studies/generate', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        title,
+        company: document.getElementById('cs-company').value,
+        role: document.getElementById('cs-role').value,
+        problem: document.getElementById('cs-problem').value,
+        approach: document.getElementById('cs-approach').value,
+        outcome: document.getElementById('cs-outcome').value,
+        metrics: document.getElementById('cs-metrics').value,
+        target_role: document.getElementById('cs-target-role').value,
+      })
+    });
+    const d = await r.json();
+    document.getElementById('cs-generating').style.display = 'none';
+    if (d.draft) {
+      _generatedCsDraft = d.draft;
+      _generatedCsId = d.id;
+      document.getElementById('cs-draft-text').textContent = d.draft;
+      document.getElementById('cs-draft-area').style.display = 'block';
+      toast('Draft generated!', '#22c55e');
+      loadCaseStudies();
+    }
+  } catch(e) {
+    document.getElementById('cs-generating').style.display = 'none';
+    toast('Generation failed', '#ef4444');
+  }
+}
+
+async function saveCaseStudyManual() {
+  const title = document.getElementById('cs-title').value.trim();
+  if (!title) { toast('Title is required', '#ef4444'); return; }
+  try {
+    await fetch('/api/training/case-studies', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        title,
+        company: document.getElementById('cs-company').value,
+        role: document.getElementById('cs-role').value,
+        problem: document.getElementById('cs-problem').value,
+        approach: document.getElementById('cs-approach').value,
+        outcome: document.getElementById('cs-outcome').value,
+        metrics: document.getElementById('cs-metrics').value,
+        status: 'draft',
+      })
+    });
+    toast('Saved!', '#22c55e');
+    closeCsModal();
+    loadCaseStudies();
+  } catch(e) { toast('Save failed', '#ef4444'); }
+}
+
+async function viewCaseStudy(id) {
+  try {
+    const r = await fetch(`/api/training/case-studies/${id}`);
+    const c = await r.json();
+    document.getElementById('modal-title').textContent = c.title;
+    document.getElementById('modal-company').textContent = `${c.company||''} ${c.role ? '· '+c.role : ''} · ${c.status||'draft'}`;
+    document.getElementById('modal-badges').innerHTML = c.metrics ? `<span class="badge badge-low">📊 ${c.metrics}</span>` : '';
+    document.getElementById('modal-desc').textContent = c.full_draft || [
+      c.problem ? 'Problem: '+c.problem : '',
+      c.approach ? 'Approach: '+c.approach : '',
+      c.outcome ? 'Outcome: '+c.outcome : '',
+    ].filter(Boolean).join('\n\n') || 'No content yet.';
+    document.getElementById('modal-overlay').classList.add('open');
+  } catch(e) { toast('Failed to load', '#ef4444'); }
+}
+
+async function deleteCaseStudy(id) {
+  if (!confirm('Delete this case study?')) return;
+  await fetch(`/api/training/case-studies/${id}`, { method: 'DELETE' });
+  toast('Deleted', '#f59e0b');
+  loadCaseStudies();
+}
+
+function copyCsDraft() {
+  if (_generatedCsDraft) {
+    navigator.clipboard.writeText(_generatedCsDraft);
+    toast('Draft copied to clipboard!', '#22c55e');
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// System Tab
+// ──────────────────────────────────────────────────────────────────────────────
+let _pipelinePollInterval = null;
+
+async function loadSystemTab() {
+  loadPipelineRuns();
+  loadUploadedResume();
+  // Restore saved LinkedIn URL
+  const saved = localStorage.getItem('linkedin_url');
+  if (saved) document.getElementById('linkedin-url-input').value = saved;
+}
+
+async function loadPipelineRuns() {
+  document.getElementById('pipeline-runs-loading').style.display = 'block';
+  document.getElementById('pipeline-runs-table').style.display = 'none';
+  try {
+    const r = await fetch('/api/pipeline/runs');
+    const d = await r.json();
+    document.getElementById('pipeline-runs-loading').style.display = 'none';
+    document.getElementById('pipeline-runs-table').style.display = 'block';
+
+    // Update pipeline status badge
+    setPipelineStatus(d.pipeline_running, d.pipeline_started_at);
+
+    // Last run summary card
+    const runs = d.runs || [];
+    const last = runs[0];
+    const lastRunEl = document.getElementById('sys-last-run');
+    if (last) {
+      const when = last.finished_at ? _relTime(last.finished_at) : 'running…';
+      const statusColor = last.status === 'success' ? '#22c55e' : last.status === 'running' ? '#f59e0b' : '#ef4444';
+      const statusIcon = last.status === 'success' ? '✓' : last.status === 'running' ? '⏳' : '✗';
+      lastRunEl.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="color:${statusColor};font-weight:700;font-size:13px">${statusIcon} ${last.status}</span>
+          <span style="color:var(--text)">${when}</span>
+          <span style="color:var(--muted)">·</span>
+          <span style="color:var(--muted)">${last.jobs_fetched ?? 0} fetched</span>
+          <span style="color:var(--green);font-weight:600">+${last.jobs_new ?? 0} new</span>
+          <span style="color:var(--accent)">${last.jobs_enriched ?? 0} enriched</span>
+        </div>
+        <div style="color:var(--muted);font-size:10px;margin-top:4px;font-family:'DM Mono',monospace">${last.run_id || ''}</div>`;
+    } else {
+      lastRunEl.innerHTML = '<div style="color:var(--muted)">No runs yet — click Run Pipeline Now to start.</div>';
+    }
+
+    // Render table rows
+    document.getElementById('pipeline-runs-rows').innerHTML = runs.map(run => {
+      const statusColor = run.status === 'success' ? '#22c55e'
+        : run.status?.startsWith('success') ? '#22c55e'
+        : run.status === 'running' ? '#f59e0b' : '#ef4444';
+      const when = run.finished_at ? _relTime(run.finished_at) : '—';
+      return `<div style="display:grid;grid-template-columns:140px 80px 70px 70px 70px 1fr;gap:0;font-size:11px;padding:6px 8px;border-bottom:1px solid var(--border-subtle);align-items:center">
+        <span style="color:var(--muted)">${when}</span>
+        <span style="color:${statusColor};font-weight:600">${run.status || '—'}</span>
+        <span>${run.jobs_fetched ?? '—'}</span>
+        <span style="color:var(--green)">${run.jobs_new ?? '—'}</span>
+        <span style="color:var(--accent)">${run.jobs_enriched ?? '—'}</span>
+        <span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${run.run_id || ''}</span>
+      </div>`;
+    }).join('') || '<div style="padding:12px 8px;color:var(--muted);font-size:12px">No runs found.</div>';
+
+  } catch(e) {
+    document.getElementById('pipeline-runs-loading').textContent = 'Failed to load run history.';
+  }
+}
+
+function setPipelineStatus(running, startedAt) {
+  const badge = document.getElementById('sys-pipeline-badge');
+  const spinner = document.getElementById('sys-pipeline-spinner');
+  const dot = document.getElementById('nav-pipeline-dot');
+  const btn = document.getElementById('run-pipeline-btn');
+
+  if (running) {
+    badge.textContent = 'RUNNING';
+    badge.style.background = 'rgba(245,158,11,0.15)';
+    badge.style.color = '#f59e0b';
+    spinner.style.display = 'inline-block';
+    dot.style.background = '#f59e0b';
+    dot.style.boxShadow = '0 0 6px #f59e0b';
+    dot.title = 'Pipeline running…';
+    btn.disabled = true;
+    btn.textContent = '⏳ Running…';
+  } else {
+    badge.textContent = 'IDLE';
+    badge.style.background = 'var(--border)';
+    badge.style.color = 'var(--muted)';
+    spinner.style.display = 'none';
+    dot.style.background = 'var(--border)';
+    dot.style.boxShadow = 'none';
+    dot.title = 'Pipeline idle';
+    btn.disabled = false;
+    btn.textContent = '▶ Run Pipeline Now';
+  }
+}
+
+async function triggerPipeline() {
+  const skipCareer  = document.getElementById('opt-skip-career').checked;
+  const skipRatings = document.getElementById('opt-skip-ratings').checked;
+  const btn = document.getElementById('run-pipeline-btn');
+  btn.disabled = true;
+
+  try {
+    const r = await fetch('/api/pipeline/trigger', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ skip_career_pages: skipCareer, skip_ratings: skipRatings }),
+    });
+    const d = await r.json();
+    if (r.status === 409) {
+      toast('Pipeline already running', '#f59e0b'); btn.disabled = false; return;
+    }
+    toast('Pipeline started!', '#22c55e');
+    setPipelineStatus(true, null);
+    // Poll every 8s until done
+    clearInterval(_pipelinePollInterval);
+    _pipelinePollInterval = setInterval(async () => {
+      const pr = await fetch('/api/pipeline/runs');
+      const pd = await pr.json();
+      setPipelineStatus(pd.pipeline_running, pd.pipeline_started_at);
+      if (!pd.pipeline_running) {
+        clearInterval(_pipelinePollInterval);
+        loadPipelineRuns();
+        loadStats();
+        loadJobs();
+        toast('Pipeline complete — jobs updated!', '#22c55e');
+      }
+    }, 8000);
+  } catch(e) {
+    toast('Failed to start pipeline', '#ef4444');
+    btn.disabled = false;
+  }
+}
+
+function _relTime(iso) {
+  if (!iso) return '—';
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 60)    return 'just now';
+  if (diff < 3600)  return `${Math.round(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.round(diff/3600)}h ago`;
+  return `${Math.round(diff/86400)}d ago`;
+}
+
+// ── Resume Upload ─────────────────────────────────────────────────────────────
+async function loadUploadedResume() {
+  try {
+    const r = await fetch('/api/resume/uploaded');
+    const d = await r.json();
+    const el = document.getElementById('resume-upload-status');
+    if (d.uploaded) {
+      const when = d.modified ? _relTime(new Date(d.modified * 1000).toISOString()) : '';
+      el.innerHTML = `<span style="color:var(--green);font-weight:600">✓ Resume uploaded</span>
+        <span style="color:var(--muted);margin-left:8px">${d.word_count} words · ${when}</span>`;
+      document.getElementById('resume-preview-box').style.display = 'block';
+      document.getElementById('resume-preview-box').textContent = d.preview;
+    } else {
+      el.innerHTML = '<span style="color:var(--muted)">No resume uploaded yet.</span>';
+    }
+  } catch(e) {}
+}
+
+async function uploadResume(file) {
+  if (!file) return;
+  document.getElementById('resume-upload-progress').style.display = 'block';
+  document.getElementById('resume-drop-zone').style.opacity = '0.5';
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    const r = await fetch('/api/resume/upload', { method: 'POST', body: form });
+    const d = await r.json();
+    document.getElementById('resume-upload-progress').style.display = 'none';
+    document.getElementById('resume-drop-zone').style.opacity = '1';
+    if (d.ok) {
+      toast(`Resume uploaded — ${d.word_count} words extracted`, '#22c55e');
+      loadUploadedResume();
+    } else {
+      toast(d.detail || 'Upload failed', '#ef4444');
+    }
+  } catch(e) {
+    document.getElementById('resume-upload-progress').style.display = 'none';
+    document.getElementById('resume-drop-zone').style.opacity = '1';
+    toast('Upload failed', '#ef4444');
+  }
+}
+
+function handleResumeDrop(e) {
+  e.preventDefault();
+  document.getElementById('resume-drop-zone').style.borderColor = 'var(--border)';
+  const file = e.dataTransfer.files[0];
+  if (file) uploadResume(file);
+}
+
+// ── LinkedIn & Settings ───────────────────────────────────────────────────────
+function openLinkedIn() {
+  const url = document.getElementById('linkedin-url-input').value.trim();
+  if (!url) { toast('Enter your LinkedIn URL first', '#f59e0b'); return false; }
+  localStorage.setItem('linkedin_url', url);
+  window.open(url, '_blank');
+  return false;
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'linkedin-url-input') {
+    localStorage.setItem('linkedin_url', e.target.value);
+    const link = document.getElementById('linkedin-quick-link');
+    if (link) link.href = e.target.value || '#';
+  }
+});
+
+function savePreset(val) {
+  localStorage.setItem('scoring_preset', val);
+  toast(`Preset saved — edit profile.yaml to apply: scoring_preset: "${val}"`, '#f59e0b');
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
+// Cover Letter
+// ──────────────────────────────────────────────────────────────────────────────
+let _currentCL = null; // { jobId, letter, job_title, company, candidate_name }
+
+function showCoverLetter(jobId) {
+  const j = allJobs.find(x => x.job_id === jobId) || {};
+  const title = j.title || '', company = j.company || '';
+  _currentCL = { jobId, job_title: title, company };
+  document.getElementById('cl-modal-title').textContent = 'Cover Letter';
+  document.getElementById('cl-modal-company').textContent = `${title} · ${company}`;
+  document.getElementById('cl-generating').style.display = 'block';
+  document.getElementById('cl-content').style.display = 'none';
+  document.getElementById('cl-error').style.display = 'none';
+  document.getElementById('cl-overlay').classList.add('open');
+  _fetchCoverLetter(jobId);
+}
+
+async function _fetchCoverLetter(jobId) {
+  try {
+    const res = await fetch(`/api/jobs/${jobId}/cover-letter`, { method: 'POST' });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Generation failed'); }
+    const data = await res.json();
+    _currentCL = { ..._currentCL, ...data };
+    document.getElementById('cl-letter-text').textContent = data.letter;
+    document.getElementById('cl-generating').style.display = 'none';
+    document.getElementById('cl-content').style.display = 'block';
+  } catch (e) {
+    document.getElementById('cl-generating').style.display = 'none';
+    const el = document.getElementById('cl-error');
+    el.style.display = 'block';
+    el.textContent = e.message;
+  }
+}
+
+function closeCLOverlay(e) {
+  if (!e || e.target === document.getElementById('cl-overlay'))
+    document.getElementById('cl-overlay').classList.remove('open');
+}
+
+function copyCoverLetter() {
+  const text = document.getElementById('cl-letter-text').innerText;
+  navigator.clipboard.writeText(text).then(() => showToast('Cover letter copied'));
+}
+
+function regenerateCoverLetter() {
+  if (!_currentCL) return;
+  document.getElementById('cl-generating').style.display = 'block';
+  document.getElementById('cl-content').style.display = 'none';
+  document.getElementById('cl-error').style.display = 'none';
+  _fetchCoverLetter(_currentCL.jobId);
+}
+
+async function downloadCoverLetterPDF() {
+  if (!_currentCL) return;
+  // Grab possibly-edited text from the contenteditable div
+  const editedLetter = document.getElementById('cl-letter-text').innerText;
+  try {
+    const res = await fetch(`/api/jobs/${_currentCL.jobId}/cover-letter/pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ..._currentCL, letter: editedLetter }),
+    });
+    if (!res.ok) throw new Error('PDF generation failed');
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `Cover_Letter_${(_currentCL.company||'Company').replace(/\s+/g,'_')}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('PDF downloading…');
+  } catch (e) { showToast('PDF failed: ' + e.message); }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Tweak Resume
+// ──────────────────────────────────────────────────────────────────────────────
+let _currentTweaks = null;
+
+function showTweakResume(jobId) {
+  const j = allJobs.find(x => x.job_id === jobId) || {};
+  const title = j.title || '', company = j.company || '';
+  _currentTweaks = null;
+  document.getElementById('tweak-modal-title').textContent = 'ATS Resume Tweaks';
+  document.getElementById('tweak-modal-company').textContent = `${title} · ${company}`;
+  document.getElementById('tweak-generating').style.display = 'block';
+  document.getElementById('tweak-content').style.display = 'none';
+  document.getElementById('tweak-error').style.display = 'none';
+  document.getElementById('tweak-overlay').classList.add('open');
+  _fetchTweaks(jobId);
+}
+
+async function _fetchTweaks(jobId) {
+  try {
+    const res = await fetch(`/api/jobs/${jobId}/tweak-resume`, { method: 'POST' });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Analysis failed'); }
+    const data = await res.json();
+    _currentTweaks = data;
+    _renderTweaks(data);
+    document.getElementById('tweak-generating').style.display = 'none';
+    document.getElementById('tweak-content').style.display = 'block';
+  } catch (e) {
+    document.getElementById('tweak-generating').style.display = 'none';
+    const el = document.getElementById('tweak-error');
+    el.style.display = 'block';
+    el.textContent = e.message;
+  }
+}
+
+function _renderTweaks(data) {
+  // Scores
+  document.getElementById('tweak-score-before').textContent = Math.round(data.ats_score_before || 0) + '%';
+  document.getElementById('tweak-score-after').textContent  = Math.round(data.ats_score_after  || 0) + '%';
+
+  // Missing keywords
+  const kwEl = document.getElementById('tweak-missing-kw');
+  if (data.missing_keywords && data.missing_keywords.length) {
+    kwEl.innerHTML = `
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Missing JD Keywords</div>
+      <div>${data.missing_keywords.map(k => `<span class="missing-kw-chip">${k}</span>`).join('')}</div>`;
+  } else { kwEl.innerHTML = ''; }
+
+  // Tweaks
+  const list = document.getElementById('tweak-list');
+  if (!data.tweaks || !data.tweaks.length) {
+    list.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;font-size:12px">✓ Your resume already covers the key JD keywords — no tweaks needed.</div>';
+    return;
+  }
+  list.innerHTML = `
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${data.tweaks.length} suggested change${data.tweaks.length>1?'s':''}</div>
+    ${data.tweaks.map(t => `
+    <div class="tweak-item">
+      <div class="tweak-item-header">
+        <span class="tweak-section-tag">${t.section||'Section'}</span>
+        <span class="tweak-kw-chip">${t.keyword_added||''}</span>
+      </div>
+      <div class="tweak-original">− ${t.original||''}</div>
+      <div class="tweak-suggested">+ ${t.suggested||''}</div>
+      <div class="tweak-reason">${t.reason||''}</div>
+    </div>`).join('')}`;
+}
+
+function closeTweakOverlay(e) {
+  if (!e || e.target === document.getElementById('tweak-overlay'))
+    document.getElementById('tweak-overlay').classList.remove('open');
+}
+
+function copyTweaks() {
+  if (!_currentTweaks) return;
+  const text = (_currentTweaks.tweaks || []).map((t, i) =>
+    `${i+1}. [${t.section}]\n   ORIGINAL:  ${t.original}\n   SUGGESTED: ${t.suggested}\n   WHY: ${t.reason}`
+  ).join('\n\n');
+  navigator.clipboard.writeText(text).then(() => showToast('Tweaks copied to clipboard'));
+}
+
 // Boot
 // ──────────────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -1144,14 +2131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('hashchange', () => {
   const tab = (location.hash || '#jobs').slice(1);
-  if (['jobs','resume','training'].includes(tab)) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + tab).classList.add('active');
-    document.getElementById('nav-' + tab).classList.add('active');
-    if (tab === 'training') loadTraining();
-    if (tab === 'resume') loadAnalysis();
-  }
+  if (['jobs','resume','training','system'].includes(tab)) switchTab(tab);
 });
 </script>
 </body>

@@ -22,7 +22,7 @@ from typing import Dict, Any
 # Load .env file when running locally (no-op in GitHub Actions)
 try:
     from dotenv import load_dotenv
-    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"), override=True)
 except ImportError:
     pass
 
@@ -321,11 +321,11 @@ def run_pipeline(
             print(f"  Digest ERROR: {e}")
 
     # ── Step 7: Glassdoor ratings (optional) ─────────────────────────
-    if not skip_ratings and SPREADSHEET_ID:
+    if not skip_ratings and (STORAGE_MODE == "supabase" or SPREADSHEET_ID):
         print("\nRunning Glassdoor ratings enricher...")
         try:
             import enrich_ratings
-            enrich_ratings.run(SPREADSHEET_ID)
+            enrich_ratings.run(SPREADSHEET_ID or None)
         except Exception as e:
             print(f"  Ratings enricher error: {e}")
 
@@ -366,11 +366,16 @@ def _build_parser():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py                    Full pipeline run
-  python main.py --test             Test enrichment with 2 sample jobs
-  python main.py --dry-run          Fetch & dedup only, no API calls
-  python main.py --list-searches    Show configured searches
-  python main.py --skip-career-pages --skip-ratings
+  python main.py                              Full pipeline run
+  python main.py --test                       Test enrichment with 2 sample jobs
+  python main.py --dry-run                    Fetch & dedup only, no API calls
+  python main.py --list-searches              Show configured searches
+  python main.py --serve                      Launch web dashboard (localhost:8000)
+  python main.py --eval regression            Run all golden test cases
+  python main.py --eval regression --case 004 Run single golden case
+  python main.py --eval consistency           Score same job 3x, check variance
+  python main.py --eval feedback              Show application outcome summary
+  python main.py --eval feedback --job-id JOB-123 --outcome interview
         """,
     )
     parser.add_argument("--skip-career-pages", action="store_true",
@@ -387,6 +392,17 @@ Examples:
                         help="Show all configured searches and career pages, then exit")
     parser.add_argument("--serve", action="store_true",
                         help="Launch the web dashboard (localhost:8000)")
+    parser.add_argument("--eval", metavar="MODE",
+                        choices=["regression", "consistency", "feedback"],
+                        help="Run eval suite: regression | consistency | feedback")
+    parser.add_argument("--case", metavar="PREFIX",
+                        help="Filter eval to a single case prefix (e.g. '001')")
+    parser.add_argument("--job-id", metavar="JOB_ID",
+                        help="Job ID for --eval feedback")
+    parser.add_argument("--outcome", metavar="OUTCOME",
+                        help="Outcome for --eval feedback (applied/interview/offer/...)")
+    parser.add_argument("--notes", default="",
+                        help="Optional notes for --eval feedback")
     return parser
 
 
@@ -396,6 +412,24 @@ def _cli():
 
     if args.list_searches:
         list_searches()
+        return
+
+    if args.eval:
+        if args.eval == "regression":
+            from eval.regression import run as run_regression
+            result = run_regression(case_prefix=args.case)
+            sys.exit(0 if result["failed"] == 0 else 1)
+        elif args.eval == "consistency":
+            from eval.consistency import run as run_consistency
+            result = run_consistency(case_prefix=args.case)
+            sys.exit(0 if result.get("status") in ("pass", "warn") else 1)
+        elif args.eval == "feedback":
+            from eval.feedback import run_interactive
+            run_interactive(
+                job_id=args.job_id,
+                outcome=args.outcome,
+                notes=args.notes,
+            )
         return
 
     if args.serve:

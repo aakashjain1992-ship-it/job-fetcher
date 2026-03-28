@@ -1,0 +1,19 @@
+{
+  "name": "consumer_social_product_mismatch",
+  "description": "Pure consumer/social product PM role — Aakash has no consumer experience. Should score Medium or Low.",
+  "job": {
+    "job_id": "GOLD-007",
+    "title": "Senior Product Manager — Social Feed",
+    "company": "Meta",
+    "location": "Remote, USA",
+    "region": "USA",
+    "remote_type": "Remote",
+    "salary_text": "$220,000-$280,000/year",
+    "full_description": "Meta is hiring a Senior PM for the Facebook News Feed team. You will own ranking algorithms, creator monetisation, and consumer engagement features for 2 billion daily active users. Requirements: 5+ years PM experience in consumer social products, deep understanding of recommendation systems, experience with A/B testing at massive scale (billions of users), consumer psychology and engagement metrics. We sponsor H-1B visas. Must have shipped features to 100M+ users."
+  },
+  "expected": {
+    "visa_sponsor_detected": "Yes",
+    "composite_score_max": 7.0,
+    "role_match_score_max": 7
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "logistics_ops_pm_dubai_visa",
+  "description": "Logistics/ops automation PM in Dubai — core domain match for Aakash. Should be High priority.",
+  "job": {
+    "job_id": "GOLD-004",
+    "title": "Senior Product Manager — Logistics Operations",
+    "company": "Aramex",
+    "location": "Dubai, UAE",
+    "region": "Dubai",
+    "remote_type": "Hybrid",
+    "salary_text": "AED 480,000-AED 540,000/year",
+    "full_description": "Aramex is looking for a Senior PM to own our last-mile logistics operations platform. You will lead the product for our driver and partner portals, shipment tracking, and exception management workflows. We need someone with 7-12 years of experience in B2B SaaS or logistics technology. Experience with workflow automation and operational dashboards strongly preferred. We provide visa sponsorship and relocation support for the right candidate. Hybrid work arrangement. Key responsibilities: reduce manual exception handling, automate notifications and alerts, improve partner portal usability, drive integrations with third-party carriers."
+  },
+  "expected": {
+    "role_match_score_min": 8,
+    "visa_sponsor_detected": "Yes",
+    "apply_priority": "High",
+    "composite_score_min": 7.5
+  }
+}

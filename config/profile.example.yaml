@@ -14,6 +14,8 @@ current_company: "Your Company"            # env: CANDIDATE_CURRENT_CO
 years_experience: 10                       # env: CANDIDATE_YEARS_EXP
 location: "City, Country"                  # env: CANDIDATE_LOCATION
 target_ctc_lpa: 80                         # env: CANDIDATE_TARGET_CTC (in INR lakhs)
+current_ctc_lpa: 40                        # Your current total comp in INR lakhs (used for % delta on dashboard)
+current_stock_usd: 0                       # Annual equity/RSU value in USD (included in comp delta)
 
 # --- Target regions & visa ---------------------------------------------------
 target_regions:
@@ -210,6 +212,15 @@ career_pages:
     type: "html"
     url: "https://careers.datadoghq.com/all-jobs/?department=Product+Management"
     default_region: "USA"
+
+# --- Scoring preset ----------------------------------------------------------
+# Controls how the composite score is weighted. Pick one:
+#   balanced    — default  (role 40%, visa 20%, resume 30%, red_flags 10%)
+#   visa_first  — weight visa heavily  (role 30%, visa 35%, resume 25%, red_flags 10%)
+#   role_first  — maximise role match  (role 55%, visa 15%, resume 20%, red_flags 10%)
+#   remote_first — de-weight visa, favour role/resume (role 40%, visa 10%, resume 40%, red_flags 10%)
+#   salary_first — proxy: role match is the best salary predictor (role 50%, visa 15%, resume 25%, red_flags 10%)
+scoring_preset: "balanced"
 
 # --- Experience filter -------------------------------------------------------
 # Jobs requiring more than this many years of experience are excluded.

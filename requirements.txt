@@ -8,6 +8,8 @@ pyyaml>=6.0
 supabase>=2.4.0
 fastapi>=0.110.0
 uvicorn>=0.29.0
+fpdf2>=2.7.0
+python-multipart>=0.0.9
 # Google Sheets (keep for users who prefer it)
 gspread>=6.0.0
 google-auth>=2.27.0

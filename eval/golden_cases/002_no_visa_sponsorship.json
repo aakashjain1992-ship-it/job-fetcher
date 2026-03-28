@@ -1,0 +1,18 @@
+{
+  "name": "explicit_no_visa_usa",
+  "description": "Explicit no sponsorship statement. Visa should be No. Should not be High priority.",
+  "job": {
+    "job_id": "GOLD-002",
+    "title": "Senior Product Manager — Platform",
+    "company": "Acme Corp",
+    "location": "San Francisco, USA",
+    "region": "USA",
+    "remote_type": "Hybrid",
+    "salary_text": "$180,000-$220,000/year",
+    "full_description": "We are looking for a Senior PM to own our developer platform. 5-10 years of product management experience required. Strong technical background preferred. Note: We are not able to provide visa sponsorship for this role. Applicants must be authorized to work in the United States. No H-1B sponsorship available. Strong focus on API products, developer experience, and enterprise integrations."
+  },
+  "expected": {
+    "visa_sponsor_detected": "No",
+    "apply_priority_not": "High"
+  }
+}

@@ -35,6 +35,17 @@ def _load_yaml():
         return yaml.safe_load(f)
 
 
+def _safe_int(env_val, fallback):
+    """Convert env var to int, falling back to YAML value on failure."""
+    if env_val is None:
+        return int(fallback)
+    try:
+        return int(env_val)
+    except (ValueError, TypeError):
+        print(f"WARNING: Expected integer env var, got {env_val!r} — using fallback {fallback}")
+        return int(fallback)
+
+
 def _build_profile():
     """Build the candidate profile dict from YAML + env vars."""
     cfg = _load_yaml()
@@ -42,10 +53,10 @@ def _build_profile():
     # Env vars override YAML for sensitive fields
     return {
         "name": os.environ.get("CANDIDATE_NAME", cfg.get("name", "PM Candidate")),
-        "total_experience_years": int(os.environ.get("CANDIDATE_YEARS_EXP", cfg.get("years_experience", 10))),
+        "total_experience_years": _safe_int(os.environ.get("CANDIDATE_YEARS_EXP"), cfg.get("years_experience", 10)),
         "current_title": os.environ.get("CANDIDATE_CURRENT_TITLE", cfg.get("current_title", "Senior Product Manager")),
         "current_company": os.environ.get("CANDIDATE_CURRENT_CO", cfg.get("current_company", "Current Company")),
-        "target_ctc_lpa": int(os.environ.get("CANDIDATE_TARGET_CTC", cfg.get("target_ctc_lpa", 80))),
+        "target_ctc_lpa": _safe_int(os.environ.get("CANDIDATE_TARGET_CTC"), cfg.get("target_ctc_lpa", 80)),
         "location": os.environ.get("CANDIDATE_LOCATION", cfg.get("location", "India")),
         "target_regions": cfg.get("target_regions", ["Dubai", "Singapore", "EU", "USA"]),
         "visa_required": cfg.get("visa_required", True),
@@ -80,6 +91,12 @@ def _load_config():
 CANDIDATE_PROFILE = _build_profile()
 _CONFIG = _load_config()
 
+# Current comp (used by dashboard for % delta calculations)
+# Supports both flat key (current_ctc_lpa) and nested (current_ctc.total_lpa)
+_ctc_block = _CONFIG.get("current_ctc") or {}
+CURRENT_CTC_LPA   = float(_CONFIG.get("current_ctc_lpa") or _ctc_block.get("total_lpa") or 0)
+CURRENT_STOCK_USD = float(_CONFIG.get("current_stock_usd") or _ctc_block.get("stock_usd_annual") or 0)
+
 # Search and career page config
 SEARCHES = _CONFIG.get("searches", [])
 CAREER_PAGES = _CONFIG.get("career_pages", [])
@@ -87,6 +104,17 @@ MAX_EXPERIENCE_YEARS = _CONFIG.get("max_experience_years", 12)
 MIN_ENRICHMENT_SCORE = _CONFIG.get("min_enrichment_score", 5)
 STORAGE_MODE = _CONFIG.get("storage", "json")
 JSON_OUTPUT_DIR = _CONFIG.get("json_output_dir", "output")
+
+# Scoring presets — each preset maps to component weights that sum to 1.0
+_SCORING_PRESETS = {
+    "balanced":     {"role_match": 0.40, "visa": 0.20, "resume": 0.30, "red_flags": 0.10},
+    "visa_first":   {"role_match": 0.30, "visa": 0.35, "resume": 0.25, "red_flags": 0.10},
+    "role_first":   {"role_match": 0.55, "visa": 0.15, "resume": 0.20, "red_flags": 0.10},
+    "remote_first": {"role_match": 0.40, "visa": 0.10, "resume": 0.40, "red_flags": 0.10},
+    "salary_first": {"role_match": 0.50, "visa": 0.15, "resume": 0.25, "red_flags": 0.10},
+}
+_preset_key = _CONFIG.get("scoring_preset", "balanced")
+SCORING_WEIGHTS = _SCORING_PRESETS.get(_preset_key, _SCORING_PRESETS["balanced"])
 
 # Role equivalence map — these titles all count as "Senior PM equivalent"
 EQUIVALENT_ROLES = [r.lower() for r in CANDIDATE_PROFILE.get("target_roles", [])] + [
